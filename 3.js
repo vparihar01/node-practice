@@ -1,11 +1,42 @@
 var http = require("http");
+var fs = require("fs");
 
-http.createServer(function(request,response){
+
+var server = http.createServer();
+
+
+//##### Printing the request data to server console #####//
+server.on("request",function(request,response){
 	response.writeHead(200);
-	response.write("Hello i m writing the program");
-	console.log(resonse);
-	console.log(request);
-	response.end();
+	request.on("data",function(chunk){
+		console.log(chunk.toString());
+	});
+	request.on("end",function(){
+		response.end();
+	});
 }).listen(8080);
 
-var fs = require("fs");
+
+//##### Printin back request data to as reponse on browser#####//
+server.on("request", function(request, response){
+	response.writeHead(200);
+	request.on('data',function(chunk){	
+		response.write("writing back data using the write" + chunk + "\n");
+	});
+	request.on('end', function(){
+		response.end();
+	});
+ }).listen(8080);
+
+//##### Printin back request data to as reponse on browser using the pipe#####//
+server.on("request",function(request,response){
+	response.writeHead(200);
+	request.pipe(response);
+	request.on('end', function(){
+		response.end();
+	});
+});
+
+ server.on("close",function(){
+ 
+ });
